@@ -119,25 +119,41 @@ function dataExists(req, res, next) {
   });
 }
 
-// V bug here too, becomes a default error if all properties are present but one or more is invalid
 function isRestaurantOpen(req, res, next) {
   const {
-    data: { reservation_date },
+    data: { reservation_date }
   } = req.body;
 
   let fullResDate = new Date(reservation_date);
   let dateDay = fullResDate.getDay();
 
-  if (dateDay != "2") {
+  if (fullResDate.getDay() !== 1) {
     return next();
-  }
+  } 
   next({
     status: 400,
-    message: "Restaurant is closed on Tuesdays.",
-  });
+    message: "Restaurant is closed on Tuesdays."
+  })
 }
 
-// there is a bug in the people is number and people is zero funcs.
+function isDateInPast(req, res, next) {
+  const { 
+    data: {reservation_date}
+  } = req.body;
+
+  const resDate = new Date(reservation_date)
+  const threshhold = new Date();
+
+  if (resDate.setHours(0, 0, 0, 0) <= threshhold.setHours(0, 0, 0, 0)) {
+    return next({
+      status: 400,
+      message: "Reservations can only be made for a future date."
+    })
+  }
+  next()
+}
+
+
 function peopleIsANumber(req, res, next) {
   const {
     data: { people },
@@ -213,20 +229,25 @@ module.exports = {
     asyncErrorBoundary(reservationExists),
     hasRequiredProperties,
     dataExists,
-    asyncErrorBoundary(read),
+    asyncErrorBoundary(read)
   ],
   update: [
     asyncErrorBoundary(reservationExists),
     hasRequiredProperties,
     dataExists,
-    asyncErrorBoundary(update),
+    dateIsDate,
+    peopleIsANumber,
+    timeIsTime,
+    asyncErrorBoundary(update)
   ],
   create: [
     hasRequiredProperties,
     dataExists,
     dateIsDate,
+    isRestaurantOpen,
     peopleIsANumber,
     timeIsTime,
-    asyncErrorBoundary(create),
+    isDateInPast,
+    asyncErrorBoundary(create)
   ],
 };
