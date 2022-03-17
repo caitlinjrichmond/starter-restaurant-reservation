@@ -125,7 +125,7 @@ function isRestaurantOpen(req, res, next) {
   } = req.body;
 
   let fullResDate = new Date(reservation_date);
-  let dateDay = fullResDate.getDay();
+
 
   if (fullResDate.getDay() !== 1) {
     return next();
@@ -260,8 +260,6 @@ module.exports = {
   list: [asyncErrorBoundary(list)],
   read: [
     asyncErrorBoundary(reservationExists),
-    hasRequiredProperties,
-    dataExists,
     asyncErrorBoundary(read)
   ],
   update: [

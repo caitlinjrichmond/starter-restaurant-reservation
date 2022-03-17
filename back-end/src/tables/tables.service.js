@@ -17,6 +17,7 @@ function create(table) {
 
 function update(updatedTable) {
   return knex("tables")
+    .select("*")
     .where({ table_id: updatedTable.table_id })
     .update(updatedTable, "*");
 }
@@ -25,10 +26,18 @@ function destroy(table_id) {
   return knex("tables").where({ table_id }).del();
 }
 
+function findReservation(resId) {
+  return knex("reservations")
+    .select("*")
+    .where({ reservation_id: resId })
+    .first();
+}
+
 module.exports = {
   list,
   read,
   create,
   update,
+  findReservation,
   delete: destroy,
 };
