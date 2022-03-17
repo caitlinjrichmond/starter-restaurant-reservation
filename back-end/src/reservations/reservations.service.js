@@ -28,8 +28,23 @@ function search(mobile_number) {
     .orderBy("reservation_date");
 }
 
+function update(updatedRes) {
+  return knex("reservations")
+    .where({ reservation_id: updatedRes.reservation_id })
+    .update(updatedRes, "*");
+}
+
+function create(reservation) {
+  return knex("reservations")
+    .insert(reservation)
+    .returning("*")
+    .then((createdRecords) => createdRecords[0]);
+}
+
 module.exports = {
   list,
   search,
   read,
+  update,
+  create,
 };
