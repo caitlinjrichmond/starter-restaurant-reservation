@@ -212,6 +212,39 @@ function timeIsTime(req, res, next) {
   })
 }
 
+function getMinutes(str) {
+  let time = str.split(':');
+  return time[0]*60+time[1]*1;
+}
+
+function getMinutesNow() {
+  let timeNow = new Date();
+  return timeNow.getHours()*60+timeNow.getMinutes();
+}
+
+function timeFrameIsElligble(req, res, next) {
+  const { 
+    data: {reservation_time}
+  } = req.body;
+
+  let resTime = getMinutes(reservation_time)
+  let openTime = getMinutes("10:30")
+  let closeTime = getMinutes("21:30")
+
+  if (resTime > openTime && resTime < closeTime) {
+    return next()
+  } 
+  
+  next({
+    status: 400,
+    message: `${reservation_time} must be before after 10:30am and before 9:30pm`
+  })
+
+ 
+}
+
+
+
 // function statusPropertyExists(req, res, next) {
 //   const { data: { status } } = req.body;
 //   if (status && status !== " ") {
@@ -248,6 +281,7 @@ module.exports = {
     peopleIsANumber,
     timeIsTime,
     isDateInPast,
+    timeFrameIsElligble,
     asyncErrorBoundary(create)
   ],
 };
