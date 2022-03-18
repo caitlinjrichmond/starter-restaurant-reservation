@@ -1,10 +1,6 @@
 const knex = require("../db/connection");
 
 function list(resDate) {
-  // if (resDate) {
-  //   resDate = `${resDate}T07:00:00.000Z`
-  // }
-
   if (resDate) {
     return knex("reservations")
       .select("*")
@@ -29,9 +25,27 @@ function search(mobile_number) {
 }
 
 function update(updatedRes) {
+  return (
+    knex("reservations")
+      .where({ reservation_id: updatedRes.reservation_id })
+      .update(updatedRes, [
+        "first_name",
+        "last_name",
+        "mobile_number",
+        "people",
+        "reservation_date",
+        "reservation_time",
+      ])
+      .then((updatedRecords) => updatedRecords[0])
+  );
+}
+
+function changeStatus(updatedRes) {
   return knex("reservations")
+    .select("*")
     .where({ reservation_id: updatedRes.reservation_id })
-    .update(updatedRes, "*");
+    .update(updatedRes, "status")
+    .then((updatedRecords) => updatedRecords[0]);
 }
 
 function create(reservation) {
@@ -46,5 +60,6 @@ module.exports = {
   search,
   read,
   update,
+  changeStatus,
   create,
 };

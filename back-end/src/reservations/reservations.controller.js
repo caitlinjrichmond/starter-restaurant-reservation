@@ -1,10 +1,7 @@
-/**
- * List handler for reservation resources
- */
-
 const reservationsService = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
+const P = require("pino");
 
 const VALID_PROPERTIES = [
   "first_name",
@@ -54,12 +51,6 @@ async function read(req, res) {
   res.json({ data });
 }
 
-// async function updateStatus(req, res) {
-//   const updatedRes = {
-//     data: {status: "cancelled"}
-//   }
-// }
-
 async function update(req, res) {
   const updatedRes = {
     ...res.locals.reservation,
@@ -73,24 +64,23 @@ async function update(req, res) {
 
 async function create(req, res) {
   const data = await reservationsService.create(req.body.data);
+
   res.status(201).json({ data });
 }
 
-// function hasOnlyValidProperties(req, res, next) {
-//   const { data = {} } = req.body;
+async function invalidStatusCreated(req, res, next) {
+  const {
+    data: { status }
+  } = req.body;
 
-//   const invalidFields = Object.keys(data).filter(
-//     (field) => !VALID_PROPERTIES.includes(field)
-//   );
-
-//   if (!invalidFields) {
-//     return next();
-//   }
-//   next({
-//     status: 400,
-//     message: `Invalid field(s): ${invalidFields.join(", ")}`
-//   });
-// }
+  if (status == "seated" || status == "finished") {
+    return next({
+      status: 400,
+      message: "Reservation cannot have a status of seated or finished."
+    })
+  }
+  next()
+}
 
 function dataExists(req, res, next) {
   const {
@@ -121,38 +111,36 @@ function dataExists(req, res, next) {
 
 function isRestaurantOpen(req, res, next) {
   const {
-    data: { reservation_date }
+    data: { reservation_date },
   } = req.body;
 
   let fullResDate = new Date(reservation_date);
 
-
   if (fullResDate.getDay() !== 1) {
     return next();
-  } 
+  }
   next({
     status: 400,
-    message: "Restaurant is closed on Tuesdays."
-  })
+    message: "Restaurant is closed on Tuesdays.",
+  });
 }
 
 function isDateInPast(req, res, next) {
-  const { 
-    data: {reservation_date}
+  const {
+    data: { reservation_date },
   } = req.body;
 
-  const resDate = new Date(reservation_date)
+  const resDate = new Date(reservation_date);
   const threshhold = new Date();
 
   if (resDate.setHours(0, 0, 0, 0) <= threshhold.setHours(0, 0, 0, 0)) {
     return next({
       status: 400,
-      message: "Reservations can only be made for a future date."
-    })
+      message: "Reservations can only be made for a future date.",
+    });
   }
-  next()
+  next();
 }
-
 
 function peopleIsANumber(req, res, next) {
   const {
@@ -166,19 +154,6 @@ function peopleIsANumber(req, res, next) {
     message: "Reservation must have valid number of people.",
   });
 }
-
-// function peopleIsNotZero(req, res, next) {
-//   const {
-//     data: { people },
-//   } = req.body;
-//   if (people != 0) {
-//     return next();
-//   }
-//   next({
-//     status: 400,
-//     message: `People cannot be 0.`,
-//   });
-// }
 
 function dateIsDate(req, res, next) {
   const {
@@ -197,71 +172,98 @@ function dateIsDate(req, res, next) {
 }
 
 function timeIsTime(req, res, next) {
-  const { 
-    data: {reservation_time}
+  const {
+    data: { reservation_time },
   } = req.body;
 
   let timeFormat = /^\d{1,2}:\d{2}([ap]m)?$/;
 
   if (reservation_time.match(timeFormat)) {
-    return next()
+    return next();
   }
   next({
     status: 400,
-    message: `${reservation_time} is not a valid reservation_time`
-  })
+    message: `${reservation_time} is not a valid reservation_time`,
+  });
 }
 
 function getMinutes(str) {
-  let time = str.split(':');
-  return time[0]*60+time[1]*1;
-}
-
-function getMinutesNow() {
-  let timeNow = new Date();
-  return timeNow.getHours()*60+timeNow.getMinutes();
+  let time = str.split(":");
+  return time[0] * 60 + time[1] * 1;
 }
 
 function timeFrameIsElligble(req, res, next) {
-  const { 
-    data: {reservation_time}
+  const {
+    data: { reservation_time },
   } = req.body;
 
-  let resTime = getMinutes(reservation_time)
-  let openTime = getMinutes("10:30")
-  let closeTime = getMinutes("21:30")
+  let resTime = getMinutes(reservation_time);
+  let openTime = getMinutes("10:30");
+  let closeTime = getMinutes("21:30");
 
   if (resTime > openTime && resTime < closeTime) {
-    return next()
-  } 
-  
+    return next();
+  }
+
   next({
     status: 400,
-    message: `${reservation_time} must be before after 10:30am and before 9:30pm`
-  })
-
- 
+    message: `${reservation_time} must be before after 10:30am and before 9:30pm`,
+  });
 }
 
+// !!!! POTENTIAL STATUS CANCELLED HANDLER !!!!!!
 
+// function statusIsCanceled(req, res, next) {
+//   const {
+//     data: { status },
+//   } = req.body;
 
-// function statusPropertyExists(req, res, next) {
-//   const { data: { status } } = req.body;
-//   if (status && status !== " ") {
-//     return next();
+//   if (status == "cancelled") {
+//     res.status(200).json()
 //   }
-//   next({
-//     status: 400,
-//     message: `Reservation status cannot be unknown.`
-//   })
+//   next();
+
+
 // }
+
+async function newStatus(req, res) {
+  const updatedRes = {
+    ...res.locals.reservation,
+    ...req.body.data,
+    reservation_id: res.locals.reservation.reservation_id,
+
+  };
+
+  const data = await reservationsService.changeStatus(updatedRes);
+  res.status(200).json({ data });
+}
+
+function statusPropertyExists(req, res, next) {
+  const { data: { status } } = req.body;
+  if (status == "unknown") {
+    return next({
+      status: 400,
+      message: `Reservation status cannot be unknown.`
+    });
+  }
+  next()
+}
+
+async function cannotUpdateFinishedRes(req, res,next) {
+  const reservation = await reservationsService.read(req.params.reservation_id)
+
+  if (reservation.status == "finished") {
+    return next({
+      status: 400,
+      message: "A finished reservation cannot be updated"
+    })
+  }
+  next();
+}
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
-  read: [
-    asyncErrorBoundary(reservationExists),
-    asyncErrorBoundary(read)
-  ],
+  read: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(read)],
   update: [
     asyncErrorBoundary(reservationExists),
     hasRequiredProperties,
@@ -269,7 +271,7 @@ module.exports = {
     dateIsDate,
     peopleIsANumber,
     timeIsTime,
-    asyncErrorBoundary(update)
+    asyncErrorBoundary(update),
   ],
   create: [
     hasRequiredProperties,
@@ -280,6 +282,13 @@ module.exports = {
     timeIsTime,
     isDateInPast,
     timeFrameIsElligble,
-    asyncErrorBoundary(create)
+    invalidStatusCreated,
+    asyncErrorBoundary(create),
+  ],
+  updateStatus: [
+    asyncErrorBoundary(reservationExists),
+    statusPropertyExists,
+    asyncErrorBoundary(cannotUpdateFinishedRes),
+    asyncErrorBoundary(newStatus),
   ],
 };

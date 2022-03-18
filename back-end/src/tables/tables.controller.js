@@ -44,6 +44,18 @@ async function update(req, res) {
   res.json({ data });
 }
 
+// async function seatedStatus(req, res) {
+//   const updatedTable = {
+//     ...res.locals.table,
+//     ...req.body.data,
+//     table_id: res.locals.table.table_id
+//   }
+
+//   const data = await tablesService.changeStatusToSeated(updatedTable);
+
+//   res.json({data})
+// }
+
 async function destroy(req, res) {
   const { table } = res.locals;
   await tablesService.delete(table.table_id);
@@ -153,6 +165,29 @@ async function sufficientCapacity(req, res, next) {
   }
   next();
 }
+
+// function statusPropertyExists(req, res, next) {
+//   const { data: { status } } = req.body;
+//   if (status == "unknown") {
+//     return next({
+//       status: 400,
+//       message: `Reservation status cannot be unknown.`
+//     });
+//   }
+//   next()
+// }
+
+// async function cannotUpdateFinishedRes(req, res,next) {
+//   const reservation = await tablesService.findReservation(req.params.reservation_id)
+
+//   if (reservation.status == "finished") {
+//     return next({
+//       status: 400,
+//       message: "A finished reservation cannot be updated"
+//     })
+//   }
+//   next();
+// }
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
