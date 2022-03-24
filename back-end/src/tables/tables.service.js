@@ -1,14 +1,16 @@
-const P = require("pino");
 const knex = require("../db/connection");
 
+// Retrieves tables ordered by name
 function list() {
   return knex("tables").select("*").orderBy("table_name");
 }
 
+// Retrieves table that matches given id
 function read(table_id) {
   return knex("tables").select("*").where({ table_id }).first();
 }
 
+// Adds a new table data row to the database
 function create(table) {
   return knex("tables")
     .insert(table)
@@ -16,22 +18,7 @@ function create(table) {
     .then((createdRecords) => createdRecords[0]);
 }
 
-//!!!!!!!!!!!! ATTEMPT AT TRANSACTION !!!!!!!!!!!!!!
-// function update(updatedTable) {
-//   knex.transaction((trx) => {
-//     return knex("tables")
-//       .where({ table_id: updatedTable.table_id })
-//       .update(updatedTable, "*")
-//       .then(() => {
-//         return knex("reservations")
-//         .where({ reservation_id: updatedTable.reservation_id })
-//         .update({ status: "seated" })
-//       })
-//       .then(trx.commit)
-//       .catch((err) => console.log(err))
-//   });
-// }
-
+// Handles the updating of a table - when a table is assigned a reservation id, the reservation status is then updated
 function update(updatedTable) {
   return knex("tables")
     .select("*")
@@ -44,35 +31,7 @@ function update(updatedTable) {
     });
 }
 
-/// !!!!!!!!!!!!!!!!!! ATTEMPT AT JOIN FOR UPDATE STATUS !!!!!!!!!!!!!!!!!!!!!!!!!!
-// const trx = await knex.transaction()
-
-// function update(updatedTable) {
-
-// }
-
-// !!!!!!!!!!!!!!!! OG UPDATE FUNCTION!!!!!!!!!!!!!!!!!!!!!!
-// function update(updatedTable) {
-//   return knex("tables")
-//     .select("*")
-//     .where({ table_id: updatedTable.table_id })
-//     .update(updatedTable, "*")
-// }
-
-// function destroy(table_id) {
-//   return (
-//     knex("tables")
-//       .where({ table_id })
-//       .del()
-//       // if this doesn't work just delete the whole .then
-//       .then(() => {
-//         return knex("reservations")
-//           .where({ reservation_id: updatedTable.reservation_id })
-//           .update({ status: "" });
-//       })
-//   );
-// }
-
+// Changes a reservation status to "finished", deletes the table assignment
 function destroy(table) {
   return knex("reservations")
     .where({ reservation_id: table.reservation_id })
@@ -82,6 +41,7 @@ function destroy(table) {
     });
 }
 
+// Used to look up a reservation associated with a table
 function findReservation(resId) {
   return knex("reservations")
     .select("*")

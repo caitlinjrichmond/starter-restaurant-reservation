@@ -1,92 +1,63 @@
 const tablesService = require("./tables.service");
-const reservationsService = require("../reservations/reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 
-const VALID_PROPERTIES = ["table_name", "capacity"];
-
-const hasRequiredProperties = hasProperties("table_name", "capacity");
-const hasRequiredPropertiesforUpdate = hasProperties("reservation_id");
-
-async function tableExists(req, res, next) {
-  const table = await tablesService.read(req.params.table_id);
-  if (table) {
-    res.locals.table = table;
-    return next();
-  }
-  next({ status: 404, message: `Table ${req.params.table_id} cannot be found.` });
-}
-
-function read(req, res) {
-  const { table: data } = res.locals;
-  res.json({ data });
-}
-
+// LIST all tables
 async function list(req, res, next) {
   const data = await tablesService.list();
   res.json({ data });
 }
 
+// CREATE a new table
 async function create(req, res) {
   const data = await tablesService.create(req.body.data);
   res.status(201).json({ data });
 }
 
+// UPDATE a table and assign a reservation_id
 async function update(req, res) {
   const updatedTable = {
     ...res.locals.table,
     ...req.body.data,
     table_id: res.locals.table.table_id,
-    // reservation_id: res.locals.table.reservation_id
   };
 
   const data = await tablesService.update(updatedTable);
   res.json({ data });
 }
 
-// async function seatedStatus(req, res) {
-//   const updatedTable = {
-//     ...res.locals.table,
-//     ...req.body.data,
-//     table_id: res.locals.table.table_id
-//   }
-
-//   const data = await tablesService.changeStatusToSeated(updatedTable);
-
-//   res.json({data})
-// }
-
-// OG destroy 
-// async function destroy(req, res) {
-//   const { table } = res.locals;
-//   await tablesService.delete(table.table_id);
-//   res.sendStatus(200);
-// }
-
+// DELETE a table assignment
 async function destroy(req, res) {
   const { table } = res.locals;
   await tablesService.delete(table);
   res.sendStatus(200);
 }
 
-function dataExists(req, res, next) {
-  const {
-    data: { table_name, capacity, reservation_id },
-  } = req.body;
-  if (table_name && capacity && reservation_id) {
+// Ensures request has necessary properties present --> used with create
+const hasRequiredProperties = hasProperties("table_name", "capacity");
+
+// Ensures a request to update includes the reservation id --> used with update
+const hasRequiredPropertiesforUpdate = hasProperties("reservation_id");
+
+// Ensures a table exists with a given id --> used with update & delete
+async function tableExists(req, res, next) {
+  const table = await tablesService.read(req.params.table_id);
+  if (table) {
+    res.locals.table = table;
     return next();
   }
   next({
-    status: 400,
-    message: `Table must have a table_name, capacity, and reservation_id.`,
+    status: 404,
+    message: `Table ${req.params.table_id} cannot be found.`,
   });
 }
 
+// Ensures a table's name is not empty or only 1 char --> used with create
 function tableNameIsValid(req, res, next) {
   const {
     data: { table_name },
   } = req.body;
-  if (table_name.length == 1 || table_name == "") {
+  if (table_name.length === 1 || table_name === "") {
     return next({
       status: 400,
       message: `Table must have a valid table_name.`,
@@ -95,6 +66,7 @@ function tableNameIsValid(req, res, next) {
   next();
 }
 
+// Ensures a table's capacity is an actual number --> used with create
 function capacityIsValid(req, res, next) {
   const {
     data: { capacity },
@@ -108,6 +80,7 @@ function capacityIsValid(req, res, next) {
   });
 }
 
+// Checks that a valid reservation has been assigned to the table --> used with update
 async function reservationExists(req, res, next) {
   const {
     data: { reservation_id },
@@ -124,11 +97,8 @@ async function reservationExists(req, res, next) {
   });
 }
 
+// Ensures a table with an already assigned reservation cannot have another assignment made to it --> used with update
 async function tableIsOccupied(req, res, next) {
-  // const {
-  //   data: { table_id },
-  // } = req.body;
-
   const table = await tablesService.read(req.params.table_id);
 
   if (!table.reservation_id) {
@@ -140,11 +110,8 @@ async function tableIsOccupied(req, res, next) {
   });
 }
 
+// Blocks deletion of a table that has a reservation assigned to it --> used with delete
 async function doNotDeleteOccupiedTable(req, res, next) {
-  // const {
-  //   data: { table_id },
-  // } = req.body;
-
   const table = await tablesService.read(req.params.table_id);
 
   if (table.reservation_id) {
@@ -156,13 +123,14 @@ async function doNotDeleteOccupiedTable(req, res, next) {
   });
 }
 
+// Checks that the reservation's number of people does not exceed table capacity --> used with update
 async function sufficientCapacity(req, res, next) {
   const {
     data: { reservation_id },
   } = req.body;
 
   const reservation = await tablesService.findReservation(reservation_id);
-  const table = await tablesService.read(req.params.table_id)
+  const table = await tablesService.read(req.params.table_id);
 
   if (reservation.people > table.capacity) {
     return next({
@@ -173,44 +141,22 @@ async function sufficientCapacity(req, res, next) {
   next();
 }
 
+// Ensures that one reservation cannot be assigned to more than one table --> used with update
 async function tableAlreadySeated(req, res, next) {
   const {
-    data: {reservation_id}
+    data: { reservation_id },
   } = req.body;
 
   const reservation = await tablesService.findReservation(reservation_id);
 
-  if (reservation.status == "seated") {
+  if (reservation.status === "seated") {
     return next({
       status: 400,
-      message: "Reservation has already been seated"
-    })
+      message: "Reservation has already been seated",
+    });
   }
   next();
 }
-
-// function statusPropertyExists(req, res, next) {
-//   const { data: { status } } = req.body;
-//   if (status == "unknown") {
-//     return next({
-//       status: 400,
-//       message: `Reservation status cannot be unknown.`
-//     });
-//   }
-//   next()
-// }
-
-// async function cannotUpdateFinishedRes(req, res,next) {
-//   const reservation = await tablesService.findReservation(req.params.reservation_id)
-
-//   if (reservation.status == "finished") {
-//     return next({
-//       status: 400,
-//       message: "A finished reservation cannot be updated"
-//     })
-//   }
-//   next();
-// }
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
@@ -221,13 +167,17 @@ module.exports = {
     asyncErrorBoundary(tableIsOccupied),
     asyncErrorBoundary(tableExists),
     asyncErrorBoundary(tableAlreadySeated),
-    asyncErrorBoundary(update)
+    asyncErrorBoundary(update),
   ],
   create: [
     hasRequiredProperties,
     tableNameIsValid,
     capacityIsValid,
-    asyncErrorBoundary(create)
+    asyncErrorBoundary(create),
   ],
-  delete: [asyncErrorBoundary(tableExists), asyncErrorBoundary(doNotDeleteOccupiedTable), asyncErrorBoundary(destroy)],
+  delete: [
+    asyncErrorBoundary(tableExists),
+    asyncErrorBoundary(doNotDeleteOccupiedTable),
+    asyncErrorBoundary(destroy),
+  ],
 };
