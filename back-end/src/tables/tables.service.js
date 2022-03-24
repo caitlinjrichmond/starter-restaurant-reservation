@@ -1,3 +1,4 @@
+const P = require("pino");
 const knex = require("../db/connection");
 
 function list() {
@@ -31,17 +32,54 @@ function create(table) {
 //   });
 // }
 
-// !!!!!!!!!!!!!!!! OG UPDATE FUNCTION!!!!!!!!!!!!!!!!!!!!!!
 function update(updatedTable) {
   return knex("tables")
     .select("*")
     .where({ table_id: updatedTable.table_id })
     .update(updatedTable, "*")
+    .then(() => {
+      return knex("reservations")
+        .where({ reservation_id: updatedTable.reservation_id })
+        .update({ status: "seated" });
+    });
 }
 
+/// !!!!!!!!!!!!!!!!!! ATTEMPT AT JOIN FOR UPDATE STATUS !!!!!!!!!!!!!!!!!!!!!!!!!!
+// const trx = await knex.transaction()
 
-function destroy(table_id) {
-  return knex("tables").where({ table_id }).del();
+// function update(updatedTable) {
+
+// }
+
+// !!!!!!!!!!!!!!!! OG UPDATE FUNCTION!!!!!!!!!!!!!!!!!!!!!!
+// function update(updatedTable) {
+//   return knex("tables")
+//     .select("*")
+//     .where({ table_id: updatedTable.table_id })
+//     .update(updatedTable, "*")
+// }
+
+// function destroy(table_id) {
+//   return (
+//     knex("tables")
+//       .where({ table_id })
+//       .del()
+//       // if this doesn't work just delete the whole .then
+//       .then(() => {
+//         return knex("reservations")
+//           .where({ reservation_id: updatedTable.reservation_id })
+//           .update({ status: "" });
+//       })
+//   );
+// }
+
+function destroy(table) {
+  return knex("reservations")
+    .where({ reservation_id: table.reservation_id })
+    .update({ status: "finished" })
+    .then(() => {
+      return knex("tables").where({ table_id: table.table_id }).del();
+    });
 }
 
 function findReservation(resId) {

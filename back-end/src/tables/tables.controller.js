@@ -56,9 +56,16 @@ async function update(req, res) {
 //   res.json({data})
 // }
 
+// OG destroy 
+// async function destroy(req, res) {
+//   const { table } = res.locals;
+//   await tablesService.delete(table.table_id);
+//   res.sendStatus(200);
+// }
+
 async function destroy(req, res) {
   const { table } = res.locals;
-  await tablesService.delete(table.table_id);
+  await tablesService.delete(table);
   res.sendStatus(200);
 }
 
@@ -166,6 +173,22 @@ async function sufficientCapacity(req, res, next) {
   next();
 }
 
+async function tableAlreadySeated(req, res, next) {
+  const {
+    data: {reservation_id}
+  } = req.body;
+
+  const reservation = await tablesService.findReservation(reservation_id);
+
+  if (reservation.status == "seated") {
+    return next({
+      status: 400,
+      message: "Reservation has already been seated"
+    })
+  }
+  next();
+}
+
 // function statusPropertyExists(req, res, next) {
 //   const { data: { status } } = req.body;
 //   if (status == "unknown") {
@@ -197,6 +220,7 @@ module.exports = {
     asyncErrorBoundary(sufficientCapacity),
     asyncErrorBoundary(tableIsOccupied),
     asyncErrorBoundary(tableExists),
+    asyncErrorBoundary(tableAlreadySeated),
     asyncErrorBoundary(update)
   ],
   create: [

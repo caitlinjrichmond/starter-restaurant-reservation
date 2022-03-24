@@ -5,7 +5,7 @@ function list(resDate) {
     return knex("reservations")
       .select("*")
       .where({ reservation_date: resDate })
-      .orderBy("reservation_time");
+      .orderBy("reservation_time")
   } else {
     return knex("reservations").select("*").orderBy("reservation_time");
   }
@@ -25,19 +25,17 @@ function search(mobile_number) {
 }
 
 function update(updatedRes) {
-  return (
-    knex("reservations")
-      .where({ reservation_id: updatedRes.reservation_id })
-      .update(updatedRes, [
-        "first_name",
-        "last_name",
-        "mobile_number",
-        "people",
-        "reservation_date",
-        "reservation_time",
-      ])
-      .then((updatedRecords) => updatedRecords[0])
-  );
+  return knex("reservations")
+    .where({ reservation_id: updatedRes.reservation_id })
+    .update(updatedRes, [
+      "first_name",
+      "last_name",
+      "mobile_number",
+      "people",
+      "reservation_date",
+      "reservation_time",
+    ])
+    .then((updatedRecords) => updatedRecords[0]);
 }
 
 function changeStatus(updatedRes) {
