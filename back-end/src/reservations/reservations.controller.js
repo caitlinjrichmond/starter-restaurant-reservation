@@ -212,6 +212,7 @@ function peopleIsANumber(req, res, next) {
   const {
     data: { people },
   } = req.body;
+
   if (typeof people === "number") {
     return next();
   }
@@ -220,6 +221,24 @@ function peopleIsANumber(req, res, next) {
     message: "Reservation must have valid number of people.",
   });
 }
+
+// function peopleIsANumber(req, res, next) {
+//   const {
+//     data: { people }
+//    } = req.body;
+
+//    let rawPeople = parseFloat(people)
+
+//    console.log(isNaN(rawPeople))
+
+//    if (!isNaN(rawPeople)) {
+//      return next()
+//    }
+//    next({
+//     status: 400,
+//     message: "Reservation must have valid number of people."
+//   })
+// }
 
 // Ensures a created reservation will only have a status of "booked" --> used with create
 async function invalidStatusCreated(req, res, next) {
