@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {useRouteMatch} from "react-router-dom"
-import { listReservations } from "../utils/api";
+import { listReservations, getTablesList } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import Reservations from "./Reservations";
-import DateNav from "./DateNav";
+import Reservations from "../reservations";
 import { today, previous, next } from "../utils/date-time";
-import ResByDate from "./ResByDate";
+import Tables from "../tables";
+import {useHistory} from "react-router-dom"
+
 
 /**
  * Defines the dashboard page.
@@ -16,46 +16,79 @@ import ResByDate from "./ResByDate";
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
-  const [day, setDay] = useState(date)
-  const {url} = useRouteMatch()
+  const [tables, setTables] = useState([]);
+  const [tablesError, setTablesError] = useState(null);
+  const [day, setDay] = useState(date);
+  const history = useHistory()
 
-  console.log({url})
-
+  const queryParams = new URLSearchParams(window.location.search)
 
   useEffect(loadDashboard, [date]);
+  // useEffect(loadTables, []);
 
   function loadDashboard() {
     const abortController = new AbortController();
+    // history.go(0)
     setReservationsError(null);
+    setTablesError(null);
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
+
     return () => abortController.abort();
   }
 
-  console.log(day)
+  // function loadTables() {
+  //   const abortController = new AbortController();
+  //   setTablesError(null);
+  //   getTablesList(abortController.signal).then(setTables).catch(setTablesError);
+  //   return () => abortController.abort();
+  // }
+
+  useEffect(() => {
+    setTables([]);
+    const abortController = new AbortController();
+
+    async function loadTables() {
+      try{
+        const response = await getTablesList(abortController.signal)
+        setTables(response);
+      } catch(error) {
+        if (error.name === "AbortError") {
+          console.log("Aborted");
+        } else {
+          throw error;
+        }
+      }
+    }
+    loadTables();
+
+    return() => {
+      console.log("clean up");
+      abortController.abort();
+    };
+  }, [])
 
   function goPrev() {
-    date = previous(day)
-    setDay(date)
-    loadDashboard()
-
+    date = previous(day);
+    setDay(previous(day));
+    loadDashboard();
   }
 
   function goToday() {
-    date = today(day)
-    setDay(today(day))
-    loadDashboard()
-  
+    date = today(day);
+    setDay(today(day));
+   
+    loadDashboard();
   }
 
   function goNext() {
-    date = next(day)
-    setDay(next(day))
-    loadDashboard()
-
+    date = next(day);
+    setDay(next(day));
+    loadDashboard();
   }
 
+  console.log("here is the date:", date, "here is the day:", day)
   return (
     <main>
       <h1>Dashboard</h1>
@@ -63,8 +96,13 @@ function Dashboard({ date }) {
         <h4 className="mb-0">Reservations for {day}</h4>
       </div>
       <ErrorAlert error={reservationsError} />
-      <Reservations reservations={reservations} />
-      <DateNav goPrev={goPrev} goToday={goToday} goNext={goNext} />
+      <Reservations reservations={reservations} goPrev={goPrev} goToday={goToday} goNext={goNext}  />
+      <br /> <br />
+      <div>
+        <h4>Tables</h4>
+        <Tables tables={tables} />
+   
+      </div>
     </main>
   );
 }

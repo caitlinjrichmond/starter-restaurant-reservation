@@ -133,9 +133,11 @@ function isDateInPast(req, res, next) {
   } = req.body;
 
   const resDate = new Date(reservation_date);
-  const threshhold = new Date();
+  const threshhold = new Date()
 
-  if (resDate.setHours(0, 0, 0, 0) <= threshhold.setHours(0, 0, 0, 0)) {
+  // || resDate.toUTCString().slice(0, 16) === threshhold.toUTCString().slice(0, 16)
+
+  if (resDate.valueOf() <= threshhold.valueOf()) {
     return next({
       status: 400,
       message: "Reservations can only be made for a future date.",
@@ -186,7 +188,7 @@ function timeFrameIsElligble(req, res, next) {
 
   next({
     status: 400,
-    message: `${reservation_time} must be before after 10:30am and before 9:30pm`,
+    message: `Reservation time must be after 10:30am and before 9:30pm`,
   });
 }
 
@@ -221,24 +223,6 @@ function peopleIsANumber(req, res, next) {
     message: "Reservation must have valid number of people.",
   });
 }
-
-// function peopleIsANumber(req, res, next) {
-//   const {
-//     data: { people }
-//    } = req.body;
-
-//    let rawPeople = parseFloat(people)
-
-//    console.log(isNaN(rawPeople))
-
-//    if (!isNaN(rawPeople)) {
-//      return next()
-//    }
-//    next({
-//     status: 400,
-//     message: "Reservation must have valid number of people."
-//   })
-// }
 
 // Ensures a created reservation will only have a status of "booked" --> used with create
 async function invalidStatusCreated(req, res, next) {
