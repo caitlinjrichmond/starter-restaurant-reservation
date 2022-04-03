@@ -125,7 +125,7 @@ export async function cancelRes(reservation_id) {
 export async function changeRes(updatedRes) {
   const url = `${API_BASE_URL}/reservations/${updatedRes.reservation_id}/status`
 
-  return await axios.put(url, {data: updatedRes })
+  return await axios.put(url, {data: {...updatedRes, status: "booked" }})
 }
 
 export async function readRes(reservation_id, signal) {

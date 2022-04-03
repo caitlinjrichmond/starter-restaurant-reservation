@@ -45,7 +45,8 @@ function EditReservation() {
   function handleSubmit(data) {
     changeRes(data)
       .then(() => {
-        history.push("/");
+        // history.push("/");
+        history.push(`/dashboard?date=${data.reservation_date}`)
       })
       .catch((error) => {
         setErrorMessage(error);

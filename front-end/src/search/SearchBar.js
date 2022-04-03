@@ -15,6 +15,7 @@ function SearchBar({handleChange, handleSubmit, mobileNum}) {
                 name="mobile_number"
                 onChange={handleChange}
                 value={mobileNum}
+                minLength="2"
                 required
                 />
             </label> {" "}

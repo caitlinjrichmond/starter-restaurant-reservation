@@ -3,6 +3,7 @@ import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
 import ReservationsList from "../reservations/ReservationsList";
 import { getResByNum } from "../utils/api";
+import {useHistory} from "react-router-dom";
 
 function SearchByNumber() {
   const [data, setData] = useState({});
@@ -11,6 +12,7 @@ function SearchByNumber() {
   const [reservations, setReservations] = useState([]);
   const [mobileNum, setMobileNum] = useState("");
   const [submitStatus, setSubmitStatus] = useState(false)
+  const history = useHistory();
 
   const handleChange = (event) => {
     event.preventDefault();
@@ -21,6 +23,7 @@ function SearchByNumber() {
   const handleSubmit = (event) => {
     event.preventDefault();
    setSubmitStatus(true)
+   
   };
 
   // function loadResults() {

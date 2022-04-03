@@ -15,9 +15,11 @@ function CancelRes({ reservation }) {
         "Do you want to cancel this reservation? This cannot be undone."
       )
     ) {
-      cancelRes(reservation.reservation_id);
-      history.go(0);
-    }
+      cancelRes(reservation.reservation_id)
+      .then(() => history.go(0))
+      // .then(history.push(`/dashboard?date=${reservation.reservation_date}`))
+      // history.go(0);
+    }  
   };
   return (
     <div>

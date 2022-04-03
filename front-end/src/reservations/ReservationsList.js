@@ -48,10 +48,7 @@ function ReservationsList({ reservations }) {
                           Seat
                         </button>
                       </a>
-                    </div>
-                  )}
-                  <br />
-                  <button type="button" className="btn btn-light">
+                      <button type="button" className="btn btn-light">
                     <a
                       href={`/reservations/${reservation.reservation_id}/edit`}
                     >
@@ -59,6 +56,17 @@ function ReservationsList({ reservations }) {
                       Edit{" "}
                     </a>
                   </button>
+                    </div>
+                  )}
+                  <br />
+                  {/* <button type="button" className="btn btn-light">
+                    <a
+                      href={`/reservations/${reservation.reservation_id}/edit`}
+                    >
+                      {" "}
+                      Edit{" "}
+                    </a>
+                  </button> */}
                   <CancelRes reservation={reservation} /> <br />
                 </div>
               </div>
@@ -66,7 +74,7 @@ function ReservationsList({ reservations }) {
           ) : null
         )
       ) : (
-        <p>No Reservations Found</p>
+        <p>No reservations found</p>
       )}
     </div>
   );
