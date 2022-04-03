@@ -10,12 +10,12 @@ function SearchBar({handleChange, handleSubmit, mobileNum}) {
                 Phone Number:
                 <input 
                 id="mobile_number"
-                type="text"
+                type="tel"
                 class="form-control"
                 name="mobile_number"
                 onChange={handleChange}
                 value={mobileNum}
-                minLength="2"
+                minLength="10"
                 required
                 />
             </label> {" "}
