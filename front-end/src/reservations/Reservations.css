@@ -1,0 +1,24 @@
+/* styling for reservations and related components */
+
+body {
+    background-color: #DAD3C9;
+    font-family: "American Typewriter", "serif";
+}
+
+.card {
+    border-color: #37371F;
+}
+
+.res-card {
+    background-color: #C9E3AC;
+    font-weight: 500;
+
+}
+
+.btn-seat {
+    background-color: #EA9010;
+}
+
+.btn-cancel {
+    background-color: #37371F
+}

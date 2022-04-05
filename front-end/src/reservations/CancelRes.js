@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import { cancelRes } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
+//Function allows users to cancel a reservation via a cancel button and thus changes status to 'cancelled' //
+
 function CancelRes({ reservation }) {
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
@@ -15,24 +17,21 @@ function CancelRes({ reservation }) {
         "Do you want to cancel this reservation? This cannot be undone."
       )
     ) {
-      cancelRes(reservation.reservation_id)
-      .then(() => history.go(0))
-      // .then(history.push(`/dashboard?date=${reservation.reservation_date}`))
-      // history.go(0);
-    }  
+      cancelRes(reservation.reservation_id).then(() => history.go(0));
+    }
   };
   return (
-    <div>
+    <>
       <button
         type="button"
-        className="btn btn-dark"
+        className="btn btn-cancel"
         data-reservation-id-cancel={reservation.reservation_id}
         onClick={handleCancel}
       >
-        Cancel
+        <span style={{ color: "#FFFAF2" }}>Cancel</span>
       </button>
       <>{errorMessage ? <ErrorAlert error={errorMessage} /> : null}</>
-    </div>
+    </>
   );
 }
 

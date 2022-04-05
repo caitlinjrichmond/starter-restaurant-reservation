@@ -5,6 +5,8 @@ import { formatAsDate } from "../utils/date-time";
 import ResForm from "./form/ResForm";
 import ErrorAlert from "../layout/ErrorAlert";
 
+//Allows a user to edit an existing reservation //
+
 function EditReservation() {
   const reservationId = useParams().reservation_id;
   const [reservation, setReservation] = useState([]);
@@ -12,6 +14,7 @@ function EditReservation() {
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
 
+  //Loads reservation to edit //
   useEffect(() => {
     setReservation([]);
     const abortController = new AbortController();
@@ -19,8 +22,7 @@ function EditReservation() {
     async function loadRes() {
       try {
         const response = await readRes(reservationId, abortController.signal);
-        // const resFromAPI = await response.json()
-        console.log("response:", response)
+        console.log("response:", response);
         setReservation(response);
       } catch (error) {
         if (error.name === "AbortError") {
@@ -38,15 +40,10 @@ function EditReservation() {
     };
   }, [reservationId]);
 
-  console.log("we are getting a response, here is the reservation being read:", reservation)
-
-
-
   function handleSubmit(data) {
     changeRes(data)
       .then(() => {
-        // history.push("/");
-        history.push(`/dashboard?date=${data.reservation_date}`)
+        history.push(`/dashboard?date=${data.reservation_date}`);
       })
       .catch((error) => {
         setErrorMessage(error);
@@ -54,7 +51,7 @@ function EditReservation() {
       });
   }
 
-
+  //Defines the initial state of the form - existing fields //
   const initial = {
     first_name: reservation.first_name,
     last_name: reservation.last_name,
@@ -64,10 +61,11 @@ function EditReservation() {
     people: reservation.people,
   };
 
-
   return (
     <div>
-      <p>Edit Reservation</p>
+      <h1 className="ml-5" style={{ color: "#37371F" }}>
+        Edit Reservation
+      </h1>
       {reservation.reservation_id ? (
         <ResForm
           handleSubmit={handleSubmit}

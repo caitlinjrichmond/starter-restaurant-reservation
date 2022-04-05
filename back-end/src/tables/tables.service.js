@@ -37,7 +37,9 @@ function destroy(table) {
     .where({ reservation_id: table.reservation_id })
     .update({ status: "finished" })
     .then(() => {
-      return knex("tables").where({ table_id: table.table_id }).del();
+      return knex("tables")
+        .where({ table_id: table.table_id })
+        .update({ reservation_id: null });
     });
 }
 

@@ -17,32 +17,51 @@ function Menu() {
           to="/"
         >
           <div className="sidebar-brand-text mx-3">
-            <span>Periodic Tables</span>
+            <span style={{ color: "#EA9010" }}>Periodic Tables</span>
           </div>
         </Link>
         <hr className="sidebar-divider my-0" />
         <ul className="nav navbar-nav text-light" id="accordionSidebar">
           <li className="nav-item">
-            <Link className="nav-link" to="/dashboard">
-              <span className="oi oi-dashboard" />
+            <Link
+              className="nav-link"
+              to="/dashboard"
+              style={{ color: "#90BE6D" }}
+            >
+              <span className="oi oi-dashboard" style={{ color: "#EAEFBD" }} />
               &nbsp;Dashboard
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/search">
-              <span className="oi oi-magnifying-glass" />
+            <Link
+              className="nav-link"
+              to="/search"
+              style={{ color: "#90BE6D" }}
+            >
+              <span
+                className="oi oi-magnifying-glass"
+                style={{ color: "#EAEFBD" }}
+              />
               &nbsp;Search
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/reservations/new">
-              <span className="oi oi-plus" />
+            <Link
+              className="nav-link"
+              to="/reservations/new"
+              style={{ color: "#90BE6D" }}
+            >
+              <span className="oi oi-plus" style={{ color: "#EAEFBD" }} />
               &nbsp;New Reservation
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/tables/new">
-              <span className="oi oi-layers" />
+            <Link
+              className="nav-link"
+              to="/tables/new"
+              style={{ color: "#90BE6D" }}
+            >
+              <span className="oi oi-layers" style={{ color: "#EAEFBD" }} />
               &nbsp;New Table
             </Link>
           </li>

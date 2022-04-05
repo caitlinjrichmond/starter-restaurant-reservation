@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
 import { createTable } from "../utils/api";
 
+//Form for user to create a new table //
+
 function NewTableForm() {
   const history = useHistory();
   const [data, setData] = useState({});
@@ -39,10 +41,9 @@ function NewTableForm() {
       .catch((error) => {
         setErrorMessage(error);
         console.log(error.response.data.error);
-        // return alert(`${error.response.data.error}`)
       });
   };
-  console.log(data);
+
   return (
     <>
       <div className="d-flex">
@@ -83,13 +84,17 @@ function NewTableForm() {
           <div className="ml-5">
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn btn-cancel"
               onClick={() => history.goBack()}
             >
-              Cancel
+              <span style={{ color: "#FFFAF2" }}>Cancel</span>
             </button>{" "}
-            <button type="submit" className="btn btn-primary">
-              Submit
+            <button
+              type="submit"
+              className="btn"
+              style={{ backgroundColor: "#C9E3AC" }}
+            >
+              <span style={{ color: "#37371F" }}>Submit</span>
             </button>
           </div>
         </form>

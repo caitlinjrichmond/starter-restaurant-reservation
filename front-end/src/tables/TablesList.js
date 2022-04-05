@@ -1,33 +1,42 @@
 import React from "react";
-import FinishSeat from "./FinishSeat"
+import FinishSeat from "./FinishSeat";
+
+//Function that takes in data from tables table and maps tables into individual squares (grid style)//
 
 function TablesList({ tables }) {
   return (
-    <div>
-      {tables ? tables.map((table, index) => (
-        <li key={index} style={{ listStyleType: "none" }}>
-          <div className="card">
-            <div className="card-body">
-              Table Name: {table.table_name} (Id: {table.table_id})<br />
-              Capacity: {table.capacity}
-              <br />
-              <div>
+    <div className="container">
+      <div className="row">
+        {tables ? (
+          tables.map((table) => (
+            <div
+              className="card"
+              style={{
+                width: "10rem",
+                marginBottom: "20px",
+                marginRight: "10px",
+              }}
+              key={table.table_id}
+            >
+              <div className="card-body table-card">
+                {table.table_name} <br /> Seats {table.capacity} <br />
                 {!table.reservation_id ? (
-                  <p data-table-id-status={table.table_id}>Free</p>
+                  <span data-table-id-status={table.table_id}>Free</span>
                 ) : (
-                  <div>
-                    {" "}
-                    <p data-table-id-status={table.table_id}>Occupied</p> <br />
-                    <FinishSeat table={table}/>
-                  </div>
+                  <>
+                    <span data-table-id-status={table.table_id}>Occupied</span>
+                    <br />
+                    <FinishSeat table={table} />
+                  </>
                 )}
               </div>
-              <br />
             </div>
-          </div>
-        </li>
-      )) : <p>Loading...</p>}
-      <br />
+          ))
+        ) : (
+          <p>Loading...</p>
+        )}
+        <br />
+      </div>
     </div>
   );
 }

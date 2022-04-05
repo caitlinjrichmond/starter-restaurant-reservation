@@ -1,0 +1,17 @@
+/* styling for tables and related components */
+
+body {
+    background-color: #DAD3C9;
+    color:#37371F
+}
+
+.table-card {
+    background-color: #EA9010;
+    font-weight: 600;
+}
+
+.btn-finish {
+    background-color: #37371F;
+    color:#FFFAF2;
+ 
+}

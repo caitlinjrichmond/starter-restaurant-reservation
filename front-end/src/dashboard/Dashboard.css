@@ -1,0 +1,14 @@
+/* contains styling for dashboard and related components */
+
+body {
+  background-color: #DAD3C9;
+  font-family: "American Typewriter", "serif";
+}
+
+.btn-nav {
+  background-color: #eaefbd;
+}
+
+.btn-edit {
+  background-color: #90be6d;
+}

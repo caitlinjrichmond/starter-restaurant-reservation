@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
-import { finishTable, createTable } from "../utils/api";
+import { finishTable } from "../utils/api";
+
+//Allows user to finish the table seating, deleting the reservation assignment and makes the table free for another seating//
 
 function FinishSeat({ table }) {
   const [errorMessage, setErrorMessage] = useState("");
@@ -15,21 +17,22 @@ function FinishSeat({ table }) {
         "Is this table ready to seat new guests? This cannot be undone."
       )
     ) {
-      finishTable(table.table_id)
-      createTable({
-        table_name: table.table_name,
-        capacity: table.capacity,
-      })
-      (history.go(0));
+      finishTable(table.table_id).then(() => history.go(0));
     }
   };
+
   return (
-    <div>
-      <button type="button" className="btn btn-danger" onClick={handleFinish} data-table-id-finish={table.table_id}>
+    <>
+      <button
+        type="button"
+        className="btn btn-finish"
+        onClick={handleFinish}
+        data-table-id-finish={table.table_id}
+      >
         Finish
       </button>
-      <>{errorMessage ? <ErrorAlert error={errorMessage} /> : null}</>
-    </div>
+      {errorMessage ? <ErrorAlert error={errorMessage} /> : null}
+    </>
   );
 }
 

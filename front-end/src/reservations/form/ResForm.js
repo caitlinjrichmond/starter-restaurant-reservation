@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+//Form used to create a reservation and also edit a reservation//
+
 function ResForm({ handleSubmit, initialState }) {
   const history = useHistory();
-
   const [formValue, setFormValue] = useState(initialState);
 
   const handleChange = (event) => {
@@ -76,8 +77,10 @@ function ResForm({ handleSubmit, initialState }) {
                 // pattern="\d{3}[\-]\d{4}"
                 onChange={handleChange}
                 value={formValue?.mobile_number}
+                minLength="10"
                 required
               ></input>
+              <span style={{ fontSize: "12px" }}>Must be 10 Characters</span>
             </div>
           </div>
           <div className="form-group row">
@@ -138,12 +141,16 @@ function ResForm({ handleSubmit, initialState }) {
           <div className="ml-5">
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn btn-cancel"
               onClick={() => history.goBack()}
             >
-              Cancel
+              <span style={{ color: "#FFFAF2" }}>Cancel</span>
             </button>{" "}
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn"
+              style={{ backgroundColor: "#C9E3AC" }}
+            >
               Submit
             </button>
           </div>

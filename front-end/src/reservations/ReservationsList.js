@@ -1,32 +1,36 @@
 import React from "react";
 import CancelRes from "./CancelRes";
 
+//Function takes in reservation data and maps out the list into individual cards for each reservation//
+
 function ReservationsList({ reservations }) {
   return (
     <div>
       {" "}
       {reservations && reservations.length !== 0 ? (
-        reservations.map((reservation, index) =>
+        reservations.map((reservation) =>
           reservation.status !== "finished" &&
           reservation.status !== "cancelled" ? (
-            <li key={index} style={{ listStyleType: "none" }}>
-              <div className="card">
-                <div className="card-body">
-                  First Name: {reservation.first_name} <br />
-                  Last Name: {reservation.last_name} <br />
-                  Phone: {reservation.mobile_number}
+            <li
+              key={reservation.reservation_id}
+              style={{ listStyleType: "none" }}
+            >
+              <div
+                className="card"
+                style={{ width: "35rem", marginBottom: "20px" }}
+              >
+                <div className="card-body res-card">
+                  <h5>
+                    {reservation.first_name} {reservation.last_name} - Party of{" "}
+                    {reservation.people} @ {reservation.reservation_time}
+                  </h5>{" "}
                   <br />
-                  Reservation Time: {reservation.reservation_time}
-                  <br />
-                  Number of People: {reservation.people}
-                  <br />
-                  Status:{" "}
                   {reservation.status === "seated" ? (
                     <div>
                       <p
                         data-reservation-id-status={reservation.reservation_id}
                       >
-                        {reservation.status}
+                        Reservation has been {reservation.status} to a table.
                       </p>{" "}
                     </div>
                   ) : (
@@ -34,40 +38,35 @@ function ReservationsList({ reservations }) {
                       <p
                         data-reservation-id-status={reservation.reservation_id}
                       >
-                        booked
-                      </p>{" "}
+                        Reservation has been booked | Click seat to assign to
+                        table
+                      </p>
                       <br />
                       <a
                         href={`/reservations/${reservation.reservation_id}/seat`}
                       >
                         <button
                           type="button"
-                          className="btn btn-warning"
+                          className="btn btn-seat"
                           href={`/reservations/${reservation.reservation_id}/seat`}
                         >
                           Seat
-                        </button>
+                        </button>{" "}
                       </a>
-                      <button type="button" className="btn btn-light">
-                    <a
-                      href={`/reservations/${reservation.reservation_id}/edit`}
-                    >
-                      {" "}
-                      Edit{" "}
-                    </a>
-                  </button>
+                      <a
+                        href={`/reservations/${reservation.reservation_id}/edit`}
+                      >
+                        <button
+                          type="button"
+                          className="btn btn-edit"
+                          href={`/reservations/${reservation.reservation_id}/edit`}
+                        >
+                          Edit{" "}
+                        </button>
+                      </a>{" "}
+                      <CancelRes reservation={reservation} /> <br />
                     </div>
-                  )}
-                  <br />
-                  {/* <button type="button" className="btn btn-light">
-                    <a
-                      href={`/reservations/${reservation.reservation_id}/edit`}
-                    >
-                      {" "}
-                      Edit{" "}
-                    </a>
-                  </button> */}
-                  <CancelRes reservation={reservation} /> <br />
+                  )}{" "}
                 </div>
               </div>
             </li>
@@ -81,31 +80,3 @@ function ReservationsList({ reservations }) {
 }
 
 export default ReservationsList;
-{
-  /* {reservation.status === "booked" || !reservation.status ? (
-                  <>
-                    <p data-reservation-id-status={reservation.reservation_id}>
-                      {reservation.status}
-                    </p>{" "}
-                    <br />
-                    <a
-                      href={`/reservations/${reservation.reservation_id}/seat`}
-                    >
-                      <button
-                        type="button"
-                        className="btn btn-warning"
-                        href={`/reservations/${reservation.reservation_id}/seat`}
-                      >
-                        Seat
-                      </button>
-                    </a>{" "}
-                  </>
-                ) : (
-                  <>
-                  <p data-reservation-id-status={reservation.reservation_id}>
-                    {reservation.status}
-                  </p>{" "}
-                  <br />
-                </>
-                )} */
-}
