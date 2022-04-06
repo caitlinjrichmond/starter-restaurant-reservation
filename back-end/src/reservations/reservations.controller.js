@@ -193,14 +193,26 @@ function timeFrameIsElligble(req, res, next) {
 }
 
 // Ensures a reservation cannot be made on a Tues --> used with create
+function convertUTCDateToLocalDate(date) {
+  let newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+  let offset = date.getTimezoneOffset() / 60;
+  let hours = date.getHours();
+
+  newDate.setHours(hours - offset);
+
+  return newDate
+}
+
 function isRestaurantOpen(req, res, next) {
   const {
     data: { reservation_date },
   } = req.body;
 
   let fullResDate = new Date(reservation_date);
+  let convertedDate = convertUTCDateToLocalDate(fullResDate);
 
-  if (fullResDate.getDay() !== 1) {
+  if (convertedDate.getDay() !== 2) {
     return next();
   }
   next({
