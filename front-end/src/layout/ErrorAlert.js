@@ -11,7 +11,7 @@ import React from "react";
 function ErrorAlert({ error }) {
   return (
     error && (
-      <div className="alert-danger">Error: {error.response.data.error}</div>
+      <div className="alert alert-danger">Error: {error.response.data.error}</div>
     )
   );
 }
