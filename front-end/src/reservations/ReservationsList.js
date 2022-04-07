@@ -48,7 +48,6 @@ function ReservationsList({ reservations }) {
                         <button
                           type="button"
                           className="btn btn-seat"
-                          href={`/reservations/${reservation.reservation_id}/seat`}
                         >
                           Seat
                         </button>{" "}
@@ -59,7 +58,6 @@ function ReservationsList({ reservations }) {
                         <button
                           type="button"
                           className="btn btn-edit"
-                          href={`/reservations/${reservation.reservation_id}/edit`}
                         >
                           Edit{" "}
                         </button>
