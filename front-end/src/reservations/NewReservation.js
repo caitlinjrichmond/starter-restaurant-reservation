@@ -37,7 +37,7 @@ function NewReservation() {
     <>
       <h1 className="ml-5" style={{color:"#37371F"}}>New Reservation</h1>
       <ResForm handleSubmit={handleSubmit} initialState={initialFormState} />
-      {errorMessage ? <ErrorAlert error={errorMessage} /> : null}
+      <ErrorAlert error={errorMessage} />
     </>
   );
 }
