@@ -53,12 +53,14 @@ function EditReservation() {
 
   //Defines the initial state of the form - existing fields //
   const initial = {
+    reservation_id: reservation.reservation_id,
     first_name: reservation.first_name,
     last_name: reservation.last_name,
     mobile_number: reservation.mobile_number,
     reservation_date: reservation.reservation_date,
     reservation_time: reservation.reservation_time,
     people: reservation.people,
+    status: reservation.status,
   };
 
   return (
@@ -70,20 +72,14 @@ function EditReservation() {
         <ResForm
           handleSubmit={handleSubmit}
           initialState={{
-            reservation_id: reservation.reservation_id,
-            first_name: reservation.first_name,
-            last_name: reservation.last_name,
-            mobile_number: reservation.mobile_number,
+            ...initial,
             reservation_date: formatAsDate(reservation.reservation_date),
-            reservation_time: reservation.reservation_time,
-            people: reservation.people,
-            status: reservation.status,
           }}
         />
       ) : (
         <p>Loading...</p>
       )}
-      {errorMessage ? <ErrorAlert error={errorMessage} /> : null}
+      <ErrorAlert error={errorMessage} />
     </div>
   );
 }
