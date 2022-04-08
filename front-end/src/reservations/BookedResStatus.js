@@ -3,7 +3,7 @@ import CancelRes from "./CancelRes";
 import SeatBtn from "./buttons_res/SeatBtn";
 import EditBtn from "./buttons_res/EditBtn";
 
-
+// Defines what is rendered on the reservation card when the res status is "Booked" //
 function BookedResStatus({reservation}) {
     return (
         <div>
