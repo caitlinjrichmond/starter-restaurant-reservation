@@ -1,6 +1,8 @@
 import React from "react";
 import CancelRes from "./CancelRes";
 import SeatBtn from "./buttons_res/SeatBtn";
+import EditBtn from "./buttons_res/EditBtn";
+
 
 function BookedResStatus({reservation}) {
     return (
@@ -10,12 +12,8 @@ function BookedResStatus({reservation}) {
         </p>
         <br />
        <SeatBtn reservation={reservation} /> {" "}
-        <a href={`/reservations/${reservation.reservation_id}/edit`}>
-          <button type="button" className="btn btn-edit">
-            Edit{" "}
-          </button>
-        </a>{" "}
-        <CancelRes reservation={reservation} /> <br />
+       <EditBtn reservation={reservation} /> {" "}
+       <CancelRes reservation={reservation} /> <br />
       </div>
     )
 }
