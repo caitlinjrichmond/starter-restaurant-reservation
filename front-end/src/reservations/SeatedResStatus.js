@@ -1,5 +1,6 @@
 import React from "react";
 
+// Defines what is rendered on the reservation card when the res status is "Seated" //
 function SeatedResStatus({ reservation }) {
   return (
     <div>
