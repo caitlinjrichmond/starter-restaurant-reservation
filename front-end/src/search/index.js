@@ -39,6 +39,16 @@ function SearchByNumber() {
     return () => abortController.abort();
   }
 
+  function activateResults() {
+    return (submitStatus && reservations.length !== 0);
+  }
+
+  function noResult() {
+    if (submitStatus === true && reservations.length === 0) {
+      return "No reservations found"
+    }
+  }
+
   return (
     <div>
       <h3 style={{ color: "#37371F" }}>Search for Reservation</h3>
@@ -49,7 +59,7 @@ function SearchByNumber() {
         mobileNum={mobileNum}
       />
       <br />
-      {submitStatus ? <ReservationsList reservations={reservations} /> : null}
+      {activateResults() ? <ReservationsList reservations={reservations} /> : noResult()}
     </div>
   );
 }
